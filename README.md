@@ -3,13 +3,16 @@
 
 ## REST API
 
-리소스 단위로 주소체계를 사용하는 REST API를 사용을 기본으로 한다.
-모든 리소스는 복수명사로 표현하되 특정 리스소를 요청할 경우 하위 주소로 식별자를 사용할 수 있다.
+리소스 단위로 주소체계를 사용하는 [REST API](https://ko.wikipedia.org/wiki/REST)를 사용을 기본으로 한다.
+모든 리소스는 복수명사로 표현하되 특정 리스소를 요청할 경우 하위 주소로 식별자 추가하여 사용할 수 있다.
 
 HTTP 메쏘드명을 사용하여 리소스의 처리 방법을 지정할 수 있다.
-[9개 메쏘드](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) 중 
-CRUD(Crate, Read, Update, Delete)에 해당하는 POST, GET, PUT, DELETE 메소드만 사용한다.
-메쏘드는 리소스명과 결합하여 최소 5개의 API로 제공된다.
+총 [9개 메쏘드](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) 중 
+우리느 CRUD(Crate, Read, Update, Delete)에 해당하는 POST, GET, PUT, DELETE 네 개의 메소드만 사용한다.
+하나의 리소스는 메쏘드와 결합하여 최소 5개의 API로 구성된다.
+
+
+유저(user) 리소소스의 예시:
 
 * POST /users: 유저 생성
 * GET /users: 유저 목록 조회
@@ -27,13 +30,13 @@ GET, DELETE 메쏘드는 쿼리스트링을 사용할 수 있다.
 이 경우 쿼리스트링으로 파라매터를 지정할 수 있다. 
 만약 쿼리스트링에 유니코드가 포함될 경우 주소 인코딩후 API 요청해야 한다.
 
-유저 목록 중 특정 키워드로 검색한 결과를 요청할 경우 `query` 파라메터를 사용한다.
+유저 목록 중 특정 키워드로 검색할 경우 `query` 파라메터를 사용한다.
 
 ```
 GET /users?query=keyword
 ```
 
-유저 목록은 성능을 위해 페이지네이션이 필요한데 `limit`, `offset` 파라메터를 사용한다.
+유저 목록은 페이지네이션을 위해 `limit`, `offset` 파라메터를 사용한다.
 
 ```
 GET /users?limit=10&offset=20
@@ -64,7 +67,7 @@ POST, PUT 메쏘드는 요청 바디를 사용한다.
 ### StatusCode
 
 API 응답은 상태코드와 바디 두 부분으로 구성된다.
-상태코드는 응답 성공과 실패에 관한 정보를 포함하고 바디에는 실제 데이터가 JSON 형식으로 전달된다.
+상태코드는 응답의 성공, 실패에 관한 정보를 표현하고 바디는 실제 데이터가 JSON 형식으로 담아서 전달된다.
  
 사용하는 상태코드는 크게 세 분류
 
@@ -93,9 +96,11 @@ DELETE는 성공시 리소스가 없음을 의미하는 204(No Content)를 응�
 401은 인증이 필요한 API에 대해 인증되지 않은 접근일 경우 (Unauthorize) 발생한다.
 엑세스 토큰이 잘못되었거나 엑세스 토큰의 유효기간이 지났을 경우 발생한다.
 
-403(Forbidden)은 로그인 시도시 로그인 정보가 잘못되었을 경우이다. 
+403(Forbidden)은 로그인 시도시 로그인 정보(credentials)가 잘못되었을 경우이다.
+이메일이나 패스워드가 맞지 않을 경우 403으로 응답한다.
 
-404는 리소스가 없는 경우(Not Found) 발생한다
+404는 리소스가 없는 경우(Not Found) 발생한다. 
+특정 유저를 조회하는 GET /users/1 API를 호출할 경우 아이디 1인 유저가 없을 경우 404 상태코드를 응답한다.
  
 409는 추가할 리소스 서버에 있는 리소스와 충돌(Conflict)할 경우 발생한다.
 예를 들어 POST /users API로 신규 유저를 추가할 경우 이미 있는 유저(이메일이 유니크할 경우 중복 이메일 유저)일 
